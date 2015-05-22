@@ -20,16 +20,6 @@ describe(Floor) do
     end
   end
 
-  describe('#fill_map') do
-    it("Fills the whole map as either solid or empty space.") do
-      test_floor = Floor.new({:width => 10, :height => 10})
-      test_floor.fill_map(true)
-      expect(test_floor.map[4][4]).to(eq(true))
-      test_floor.fill_map(false)
-      expect(test_floor.map[4][4]).to(eq(false))
-    end
-  end
-
   describe('#rogue_style') do
     it("Generates a map in the style of the original Rogue.") do
       print("\n\nRogue-style Map:\n\n")
@@ -40,9 +30,18 @@ describe(Floor) do
     end
   end
 
-  # room_width = rand((@width/20).floor()..(@width/5).floor())
-  # room_height = rand((@height/20).floor()..(@height/5).floor())
-  # def rogue_style(num_rooms, min_room_width, min_room_height, max_room_width, max_room_height)
+  describe('#drunk_walk') do
+    it("Performs the drunkard's walk generation algorithim, clearing or filling for a given number of steps.") do
+      test_floor = Floor.new({:width => 80, :height => 40})
+      test_floor.fill_map(true)
+      steps = 5000
+      test_floor.drunk_walk(steps, false)
+      test_floor.create_boundaries()
+      # print("\n\nDrunkard's Walk [#{steps} steps]:\n\n")
+      # test_floor.print_map()
+      # print("\n")
+    end
+  end
 
   describe('#create_boundaries') do
     it("Creates walls around the edges of the map.") do
@@ -56,33 +55,6 @@ describe(Floor) do
     end
   end
 
-  describe('#drunk_walk') do
-    it("Performs the drunkard's walk generation algorithim, clearing or filling for a given number of steps.") do
-      test_floor = Floor.new({:width => 80, :height => 20})
-      test_floor.fill_map(true)
-      steps = 1000
-      test_floor.drunk_walk(steps, false)
-      test_floor.create_boundaries()
-      # if(PRINT_MAPS)
-      #   print("\n\nDrunkard's Walk [#{steps} steps]:\n\n")
-      #   test_floor.print_map()
-      #   print("\n")
-      # end
-    end
-  end
-
-  describe('#randomize_map') do
-    it("Randomizes each cell with an equal probablity of being empty or solid.") do
-      test_floor = Floor.new({:width => 80, :height => 20})
-      test_floor.randomize_map()
-      # if(PRINT_MAPS)
-      #   print("\n\nRandom Map:\n\n")
-      #   test_floor.print_map()
-      #   print("\n")
-      # end
-    end
-  end
-
   describe('#empty_neighbors') do
     it("Returns the number of empty cells surrounding a given cell within a given radius (including the given cell).") do
       test_floor = Floor.new({:width => 10, :height => 10})
@@ -91,6 +63,24 @@ describe(Floor) do
       expect(test_floor.empty_neighbors(4, 4, 3)).to(eq(0))
     end
   end
+
+  describe('#randomize_map') do
+    it("Randomizes each cell with an equal probablity of being empty or solid.") do
+      test_floor = Floor.new({:width => 80, :height => 20})
+      test_floor.randomize_map()
+    end
+  end
+
+  describe('#fill_map') do
+    it("Fills the whole map as either solid or empty space.") do
+      test_floor = Floor.new({:width => 10, :height => 10})
+      test_floor.fill_map(true)
+      expect(test_floor.map[4][4]).to(eq(true))
+      test_floor.fill_map(false)
+      expect(test_floor.map[4][4]).to(eq(false))
+    end
+  end
+
 
   describe('#random_step') do
     it("Takes a coordinate as a pair of numbers and returns a random adjacent coordinate as a hash.") do
@@ -111,6 +101,7 @@ describe(Floor) do
       expect(test_floor.is_within_map?(10, 10)).to(eq(false))
     end
   end
+
 
   describe('#is_solid?') do
     it("Returns true if the map is solid (i.e., contains a wall) at the specified coordinates.") do
