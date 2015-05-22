@@ -13,7 +13,7 @@ describe(Floor) do
   describe('#cellular_automata') do
     it("Generates a series of caverns using cellular automata.") do
       test_floor = Floor.new({:width => 80, :height => 40})
-      test_floor.cellular_automata(3, 10)
+      test_floor.cellular_automata(3, 3, 0)
       print("\n\nCellular Automata:\n\n")
       test_floor.print_map()
       print("\n")
@@ -24,7 +24,7 @@ describe(Floor) do
     it("Generates a map in the style of the original Rogue.") do
       print("\n\nRogue-style Map:\n\n")
       test_floor = Floor.new({:width => 80, :height => 40})
-      test_floor.rogue_style(30, 10, 20, 5, 10)
+      test_floor.rogue_style(30, 10, 8, 16, 3, 6)
       test_floor.print_map()
       print("\n")
     end

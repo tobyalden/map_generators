@@ -16,16 +16,24 @@ class Floor
   # ---------- CELLULAR AUTOMATA ----------
 
   #
-  def cellular_automata(iterations, min_rooms)
+  def cellular_automata(iterations, min_rooms, num_loops)
     loop do
       randomize_map()
       iterate_automata(iterations)
       break if(count_rooms()[:room_count] >= min_rooms)
     end
+
+    unconnected_rooms = count_rooms()[:rooms]
+
     while(count_rooms()[:room_count] > 1)
       connect_rooms(count_rooms()[:rooms])
     end
     create_boundaries()
+
+    num_loops.times() do
+      connect_rooms(unconnected_rooms)
+    end
+
   end
 
   def iterate_automata(iterations)
@@ -61,7 +69,7 @@ class Floor
 
   # ---------- ROGUE STYLE ----------
 
-  def rogue_style(num_rooms, min_room_width, max_room_width, min_room_height, max_room_height)
+  def rogue_style(num_rooms, num_loops, min_room_width, max_room_width, min_room_height, max_room_height)
     timeout = 1000
     number_of_rooms = num_rooms
     fill_map(true)
@@ -103,11 +111,18 @@ class Floor
 
     end
 
+    unconnected_rooms = count_rooms()[:rooms]
+
     count_rooms_attributes = count_rooms()
     while(count_rooms_attributes[:room_count] > 1)
       connect_rooms(count_rooms_attributes[:rooms])
       count_rooms_attributes = count_rooms()
     end
+
+    num_loops.times() do
+      connect_rooms(unconnected_rooms)
+    end
+
   end
 
   # ---------- DRUNKARD'S WALK ----------
@@ -173,13 +188,14 @@ class Floor
   def connect_rooms(rooms)
 
     # Pick two random points (P1 & P2) in different rooms.
-    p1 = pick_random_point()
-    while(rooms[p1.fetch(:x)][p1.fetch(:y)] == 0)
+    p1, p2 = nil
+    loop do
       p1 = pick_random_point()
+      break if((rooms[p1.fetch(:x)][p1.fetch(:y)] != 0))
     end
-    p2 = pick_random_point()
-    while(rooms[p2.fetch(:x)][p2.fetch(:y)] == 0 || rooms[p2.fetch(:x)][p2.fetch(:y)] == rooms[p1.fetch(:x)][p1.fetch(:y)])
+    loop do
       p2 = pick_random_point()
+      break if(rooms[p2.fetch(:x)][p2.fetch(:y)] != 0 && rooms[p2.fetch(:x)][p2.fetch(:y)] != rooms[p1.fetch(:x)][p1.fetch(:y)])
     end
 
     # Get P1 as close as possible to P2 without leaving the room it's in.
@@ -206,7 +222,7 @@ class Floor
 
     # Dig a tunnel between the two points.
     pdig = {:x => p1[:x], :y => p1[:y]}
-    move_point_towards_point(pdig, p2)
+    pdig = move_point_towards_point(pdig, p2)
     while(pdig != p2 && rooms[pdig.fetch(:x)][pdig.fetch(:y)] == 0)
       set_is_solid(pdig.fetch(:x), pdig.fetch(:y), false)
       pdig = move_point_towards_point(pdig, p2)
